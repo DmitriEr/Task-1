@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { stdout, stdin, argv } = require('process');
-const { Transform } = require('stream');
+const { stdout, stdin, argv, exit, stderr } = require('process');
+const { Transform, Readable, Writable } = require('stream');
 
 const { input, output, chiper, CHIPERS } = require('./src/constants');
 const { getLetter, setError, getConfig } = require('./src/utils');
@@ -23,7 +23,7 @@ setError(!fs.existsSync(outputInput), 'Output файл не существует
 
 const readSteam = input.value ? fs.createReadStream(input.value) : stdin;
 
-const writeStream = output.value ? fs.createWriteStream(output.value, (data) => data) : stdout;
+const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
 
 const chiper_cli_tool = new Transform({
     transform: (chunk, _, done) => {
@@ -33,6 +33,9 @@ const chiper_cli_tool = new Transform({
             text = [...text].reduce((acc, prev) => {
                 if (CHIPERS[item]) {
                     return acc += String.fromCodePoint(getLetter(prev.codePointAt(), CHIPERS[item]));
+                } else {
+                    stderr.write(`параметр кодировки ${item} не валиден. Валидные значения кодировки С0, С1, R0, R1, A`);
+                    exit();
                 }
             }, '');
         })
