@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const { stdout, stdin, argv, exit, stderr } = require('process');
-const { Transform, Readable, Writable } = require('stream');
+const { stdout, stdin, argv } = require('process');
+const { ChiperCeaser, ChiperROT8, ChiperAtbash } = require('./src/transform');
 
-const { input, output, chiper, CHIPERS } = require('./src/constants');
-const { getLetter, setError, getConfig } = require('./src/utils');
+const { input, output, chiper } = require('./src/constants');
+const { setError, getConfig } = require('./src/utils');
+const { pipeline } = require('stream');
 
 const value = argv.slice(2);
 
@@ -25,22 +26,37 @@ const readSteam = input.value ? fs.createReadStream(input.value) : stdin;
 
 const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
 
-const chiper_cli_tool = new Transform({
-    transform: (chunk, _, done) => {
-        let text = chunk.toString();
-        const array = chiper.value.split('-');
-        array.forEach((item) => {
-            text = [...text].reduce((acc, prev) => {
-                if (CHIPERS[item]) {
-                    return acc += String.fromCodePoint(getLetter(prev.codePointAt(), CHIPERS[item]));
-                } else {
-                    stderr.write(`параметр кодировки ${item} не валиден. Валидные значения кодировки С0, С1, R0, R1, A`);
-                    exit();
-                }
-            }, '');
-        })
-        done(null, text);
-    }
-})
+// const chiper_cli_tool = new Transform({
+//     transform: (chunk, _, done) => {
+//         let text = chunk.toString();
+//         const array = chiper.value.split('-');
+//         array.forEach((item) => {
+//             text = [...text].reduce((acc, prev) => {
+//                 if (CHIPERS[item]) {
+//                     return acc += String.fromCodePoint(getLetter(prev.codePointAt(), CHIPERS[item]));
+//                 } else {
+//                     stderr.write(`параметр кодировки ${item} не валиден. Валидные значения кодировки С0, С1, R0, R1, A`);
+//                     exit();
+//                 }
+//             }, '');
+//         })
+//         done(null, text);
+//     }
+// })
 
-readSteam.pipe(chiper_cli_tool).pipe(writeStream);
+const ceaser = new ChiperCeaser(chiper.value);
+const rot8 = new ChiperROT8(chiper.value);
+const atbash = new ChiperAtbash(chiper.value);
+
+pipeline(
+    readSteam,
+    ceaser,
+    rot8,
+    atbash,
+    writeStream,
+    (err) => {
+        if (err) {
+            console.log(err);
+        }
+    }
+)
