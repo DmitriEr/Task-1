@@ -26,24 +26,6 @@ const readSteam = input.value ? fs.createReadStream(input.value) : stdin;
 
 const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
 
-// const chiper_cli_tool = new Transform({
-//     transform: (chunk, _, done) => {
-//         let text = chunk.toString();
-//         const array = chiper.value.split('-');
-//         array.forEach((item) => {
-//             text = [...text].reduce((acc, prev) => {
-//                 if (CHIPERS[item]) {
-//                     return acc += String.fromCodePoint(getLetter(prev.codePointAt(), CHIPERS[item]));
-//                 } else {
-//                     stderr.write(`параметр кодировки ${item} не валиден. Валидные значения кодировки С0, С1, R0, R1, A`);
-//                     exit();
-//                 }
-//             }, '');
-//         })
-//         done(null, text);
-//     }
-// })
-
 const ceaser = new ChiperCeaser(chiper.value);
 const rot8 = new ChiperROT8(chiper.value);
 const atbash = new ChiperAtbash(chiper.value);
