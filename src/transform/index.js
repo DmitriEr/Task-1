@@ -3,13 +3,10 @@ const { Transform } = require('stream');
 const { SIZES } = require('../constants');
 
 class Chiper extends Transform {
-    constructor(options) {
-        super(options);
+    constructor() {
+        super();
     }
 
-    getCountChiper(regexp) {
-        return this.array.split('-').filter((item) => regexp.test(item));
-    }
 
     getLetter(code, chiper) {
         const { small, title } = SIZES;
@@ -35,47 +32,41 @@ class Chiper extends Transform {
         return code;
     }
 
-    chiperTemplate(regexp, value) {
+    chiperTemplate(value, chiper) {
         let text = value;
-        console.log(this.getCountChiper(regexp))
-        this.getCountChiper(regexp).forEach((item) => {
-            text = [...text].reduce((acc, prev) => acc += String.fromCodePoint(this.getLetter(prev.codePointAt(), item)), '');
-        })
+        text = [...text].reduce((acc, prev) => acc += String.fromCodePoint(this.getLetter(prev.codePointAt(), chiper)), '');
         return text;
     }
 
-    _transform(chunk, _, done) {
+    _transform(chunk, _, callback) {
         let text = chunk.toString();
-        text = this.chiperTemplate(this.regexp, text);
-        done(null, text);
+        text = this.chiperTemplate(text, this.chiper);
+        callback(null, text);
     }
 }
 
 class ChiperCeaser extends Chiper {
-    constructor(array) {
+    constructor(chiper) {
         super();
-        this.array = array;
         this.C0 = -1;
         this.C1 = 1;
-        this.regexp = /(C0|C1)/;
+        this.chiper = chiper;
     }
 }
 
 class ChiperROT8 extends Chiper {
-    constructor(array) {
+    constructor(chiper) {
         super();
-        this.array = array;
         this.R0 = -8;
         this.R1 = 8;
-        this.regexp = /(R0|R1)/;
+        this.chiper = chiper;
     }
 }
 
 class ChiperAtbash extends Chiper {
-    constructor(array) {
+    constructor(chiper) {
         super();
-        this.array = array;
-        this.regexp = /A/;
+        this.chiper = chiper;
     }
 }
 

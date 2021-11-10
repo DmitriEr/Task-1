@@ -24,17 +24,22 @@ setError(!fs.existsSync(outputInput), 'Output файл не существует
 
 const readSteam = input.value ? fs.createReadStream(input.value) : stdin;
 
-const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
+// const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
+const writeStream = output.value ? fs.createWriteStream(output.value) : stdout;
 
-const ceaser = new ChiperCeaser(chiper.value);
-const rot8 = new ChiperROT8(chiper.value);
-const atbash = new ChiperAtbash(chiper.value);
+const chiper_cli_tools = () => {
+    return chiper.value.split('-').reduce((acc, prev) => {
+        if(/(C0|C1)/.test(prev)) acc.push(new ChiperCeaser(prev));
+        if(/(R0|R1)/.test(prev)) acc.push(new ChiperROT8(prev));
+        if(/A/.test(prev)) acc.push(new ChiperAtbash(prev));
+        return acc;
+    }, [])
+}
+const chipers = chiper_cli_tools();
 
 pipeline(
     readSteam,
-    ceaser,
-    rot8,
-    atbash,
+    ...chipers,
     writeStream,
     (err) => {
         if (err) {
