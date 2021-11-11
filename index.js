@@ -5,7 +5,7 @@ const { ChiperCeaser, ChiperROT8, ChiperAtbash } = require('./src/transform');
 
 const { input, output, chiper } = require('./src/constants');
 const { setError, getConfig } = require('./src/utils');
-const { pipeline } = require('stream');
+const { pipeline,  Writable, Readable } = require('stream');
 
 const value = argv.slice(2);
 
@@ -22,12 +22,9 @@ setError(output.count > 1, 'параметр -o или --output дублируе
 setError(!fs.existsSync(pathInput), 'Input файл не существует');
 setError(!fs.existsSync(outputInput), 'Output файл не существует');
 
-const readSteam = input.value ? fs.createReadStream(input.value) : stdin;
+const readStream = input.value ? fs.createReadStream(input.value) : stdin;
 
-// const writeStream = output.value ? fs.createWriteStream(output.value, { flags: 'a' }) : stdout;
-const writeStream = output.value ? fs.createWriteStream(output.value) : stdout;
-
-const chiper_cli_tools = () => {
+const getArrayChipers = () => {
     return chiper.value.split('-').reduce((acc, prev) => {
         if(/(C0|C1)/.test(prev)) acc.push(new ChiperCeaser(prev));
         if(/(R0|R1)/.test(prev)) acc.push(new ChiperROT8(prev));
@@ -35,11 +32,31 @@ const chiper_cli_tools = () => {
         return acc;
     }, [])
 }
-const chipers = chiper_cli_tools();
+const chipersArray = getArrayChipers();
+class CustomWritable extends Writable {
+    constructor(filename) {
+        super();
+        this.filename = filename;
+    }
+    _write(chunk, _, callback) {
+        const text = chunk.toString();
+        if (this.filename) {
+            fs.writeFile(this.filename, text + '\n', { flag: 'a' }, (err) => {
+                console.log(err);
+            });
+        } else {
+            stdout.write(text);
+        }
+        callback();
+    }
+}
+
+const writeStream = new CustomWritable(output.value);
+// const readStream = new CustomReadable(input.value);
 
 pipeline(
-    readSteam,
-    ...chipers,
+    readStream,
+    ...chipersArray,
     writeStream,
     (err) => {
         if (err) {
