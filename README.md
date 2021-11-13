@@ -1,6 +1,6 @@
 # Task-1
 Для запуска программы набрать
-1. node index
+1. node my_chiper_cli
 2. передать следующие аргументы:
 
 - `-c, --config`: конфигурация кодирования `{XY(-)}n`, где:
@@ -13,6 +13,28 @@
         0 - расшифровка
 - `-i, --input`: путь к файлу с текстом, который нужно шифровать/расшифровать
 - `-o, --output`: путь к файлу с результатом шифровки/расшифровки
+
+Примеры выполнения
+
+- node my_ciphering_cli -c "C1-C1-R0-A" -i "./input.txt" -o "./output.txt"
+input.txt This is secret. Message about "_" symbol!
+
+output.txt Myxn xn nbdobm. Tbnnfzb ferlm "_" nhteru!
+
+- node my_ciphering_cli -c "C1-C0-A-R1-R0-A-R0-R0-C1-A" -i "./input.txt" -o "./output.txt"
+input.txt This is secret. Message about "_" symbol!
+
+output.txt Vhgw gw wkmxkv. Ckwwoik onauv "_" wqcnad!
+
+- node my_ciphering_cli -c "A-A-A-R1-R0-R0-R0-C1-C1-A" -i "./input.txt" -o "./output.txt"
+input.txt This is secret. Message about "_" symbol!
+
+output.txt Hvwg wg gsqfsh. Asggous opcih "_" gmapcz!
+
+- node my_ciphering_cli -c "C1-R1-C0-C0-A-R0-R1-R1-A-C1" -i "./input.txt" -o "./output.txt"
+input.txt This is secret. Message about "_" symbol!
+
+output.txt This is secret. Message about "_" symbol!
 
 # как проверять
 Базовая реализация
