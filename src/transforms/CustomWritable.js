@@ -1,4 +1,4 @@
-const { stdout } = require('process');
+const { stdout, stderr } = require('process');
 const { Writable } = require('stream');
 const fs = require('fs');
 
@@ -9,10 +9,9 @@ class CustomWritable extends Writable {
     }
     _write(chunk, _, callback) {
         const text = chunk.toString();
-        console.log(text);
         if (this.filename) {
             fs.writeFile(this.filename, text, { flag: 'a' }, (err) => {
-                console.log(err);
+                if (err) stderr.write('Ошибка при записи файла');
             });
         } else {
             stdout.write(text);

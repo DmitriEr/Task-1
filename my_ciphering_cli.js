@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const { stdin, argv } = require('process');
+const { argv, stdin } = require('process');
 const { pipeline } = require('stream');
 
 const { ChiperCeaser, ChiperROT8, ChiperAtbash } = require('./src/transforms/CustomChipers');
 const CustomWritable = require('./src/transforms/CustomWritable');
+const CustomReadable = require('./src/transforms/CustomReadable');
 const { input, output, chiper } = require('./src/constants');
 const { setError, getConfig } = require('./src/utils');
 
@@ -34,7 +35,7 @@ const getArrayChipers = () => {
 const chipersArray = getArrayChipers();
 
 const writeStream = new CustomWritable(output.value);
-const readStream = input.value ? fs.createReadStream(input.value) : stdin;
+const readStream = input.value ? new CustomReadable(input.value) : stdin;
 
 pipeline(
     readStream,
