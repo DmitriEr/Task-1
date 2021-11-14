@@ -2,9 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const { stderr, exit } = require('process');
 
-class CustomError extends Error {
+class CustomError {
     constructor(chiper, output, input, pathDir) {
-        super();
         this.chiper = chiper;
         this.output = output;
         this.input = input;

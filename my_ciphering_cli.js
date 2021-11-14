@@ -4,19 +4,17 @@ const fs = require('fs');
 
 const { ChiperCeaser, ChiperROT8, ChiperAtbash } = require('./src/transforms/CustomChipers');
 const CustomWritable = require('./src/transforms/CustomWritable');
-// const CustomReadable = require('./src/transforms/CustomReadable');
 const CustomError = require('./src/error');
 const { input, output, chiper } = require('./src/constants');
 const { getConfig } = require('./src/utils');
-const { fstat } = require('fs');
 
 const value = argv.slice(2);
 
 getConfig(value, input, output, chiper);
 
-const isError = new CustomError(chiper, output, input, __dirname);
+const ConfigError = new CustomError(chiper, output, input, __dirname);
 
-isError.checkValues();
+ConfigError.checkValues();
 
 const getArrayChipers = () => {
     return chiper.value.split('-').reduce((acc, prev) => {
@@ -31,7 +29,6 @@ const chipersArray = getArrayChipers();
 
 const writeStream = new CustomWritable(output.value);
 const readStream = input.value ? fs.createReadStream(input.value) : stdin;
-// const readStream = input.value ? new CustomReadable(input.value) : stdin;
 
 pipeline(
     readStream,
