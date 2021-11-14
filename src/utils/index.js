@@ -1,12 +1,3 @@
-const { stderr, exit } = require('process');
-
-const setError = (condition, text) => {
-    if (condition) {
-        stderr.write(text);
-        exit();
-    }
-}
-
 const getConfig = (value, input, output, chiper) => {
     value.forEach((item, index, arr) => {
         if (/^(-i|--input)$/.test(item)) {
@@ -24,4 +15,4 @@ const getConfig = (value, input, output, chiper) => {
     })
 }
 
-module.exports = { setError, getConfig }
+module.exports = { getConfig }
