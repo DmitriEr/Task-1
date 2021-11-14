@@ -1,28 +1,22 @@
-const fs = require('fs');
-const path = require('path');
-const { argv, stdin } = require('process');
+const { argv, stdin, stderr, exit } = require('process');
 const { pipeline } = require('stream');
+const fs = require('fs');
 
 const { ChiperCeaser, ChiperROT8, ChiperAtbash } = require('./src/transforms/CustomChipers');
 const CustomWritable = require('./src/transforms/CustomWritable');
-const CustomReadable = require('./src/transforms/CustomReadable');
+// const CustomReadable = require('./src/transforms/CustomReadable');
+const CustomError = require('./src/error');
 const { input, output, chiper } = require('./src/constants');
-const { setError, getConfig } = require('./src/utils');
+const { getConfig } = require('./src/utils');
+const { fstat } = require('fs');
 
 const value = argv.slice(2);
 
 getConfig(value, input, output, chiper);
 
-const pathInput = path.join(__dirname, input.value);
+const isError = new CustomError(chiper, output, input, __dirname);
 
-const outputInput = path.join(__dirname, output.value);
-
-setError(!chiper.value.length, 'параметр -c или --config обязателен');
-setError(chiper.count > 1, 'параметр -c или --config дублируется');
-setError(input.count > 1, 'параметр -i или --input дублируется');
-setError(output.count > 1, 'параметр -o или --output дублируется');
-setError(!fs.existsSync(pathInput), 'Input файл не существует');
-setError(!fs.existsSync(outputInput), 'Output файл не существует');
+isError.checkValues();
 
 const getArrayChipers = () => {
     return chiper.value.split('-').reduce((acc, prev) => {
@@ -31,11 +25,13 @@ const getArrayChipers = () => {
         if(/A/.test(prev)) acc.push(new ChiperAtbash(prev));
         return acc;
     }, [])
-}
+};
+
 const chipersArray = getArrayChipers();
 
 const writeStream = new CustomWritable(output.value);
-const readStream = input.value ? new CustomReadable(input.value) : stdin;
+const readStream = input.value ? fs.createReadStream(input.value) : stdin;
+// const readStream = input.value ? new CustomReadable(input.value) : stdin;
 
 pipeline(
     readStream,
@@ -43,7 +39,8 @@ pipeline(
     writeStream,
     (err) => {
         if (err) {
-            console.log(err);
+            stderr.write(err);
+            exit(1);
         }
     }
-)
+);

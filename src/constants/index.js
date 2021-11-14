@@ -12,14 +12,8 @@ const chiper = {
     count: 0,
 };
 
-const SIZES = {
-    title: { min: 65, max: 90 },
-    small: { min: 97, max: 122 },
-};
-
 module.exports = {
     input,
     output,
     chiper,
-    SIZES,
 }
