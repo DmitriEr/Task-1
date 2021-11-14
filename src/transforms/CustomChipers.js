@@ -1,32 +1,35 @@
 const { Transform } = require('stream');
 
-const { SIZES } = require('../constants');
-
 class Chiper extends Transform {
     constructor() {
         super();
+        this.sizes = {
+            small: { min: 97, max: 122 },
+            title: { min: 65, max: 90 },
+        };
     }
 
-
-    getLetter(code, chiper) {
-        const { small, title } = SIZES;
+    checkNeedChiper(code) {
+        const { small, title } = this.sizes;
         let size = small;
 
         if (code >= title.min && code <= title.max) {
-            size = title
+            size = title;
         }
-
+        
         const isNeedChiper = code >= size.min && code <= size.max;
+        
+        return { isNeedChiper, size };
+    }
 
-        if (isNeedChiper && this[chiper]) {
+    getLetter(code, chiper) {
+        const { isNeedChiper, size } = this.checkNeedChiper(code);
+
+        if (isNeedChiper) {
             let result = code + this[chiper];
             if (result < size.min) result = size.max - size.min % result + 1;
             if (result > size.max) result = size.min + result % size.max - 1;
             return result;
-        }
-
-        if (isNeedChiper && !this[chiper]) {
-            return size.max - (code - size.min);
         }
 
         return code;
@@ -67,6 +70,16 @@ class ChiperAtbash extends Chiper {
     constructor(chiper) {
         super();
         this.chiper = chiper;
+    }
+
+    getLetter(code) {
+        const { isNeedChiper, size } = this.checkNeedChiper(code);
+
+        if (isNeedChiper) {
+            return size.max - (code - size.min);
+        }
+
+        return code;
     }
 }
 
