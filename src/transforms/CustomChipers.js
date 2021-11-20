@@ -83,4 +83,4 @@ class ChiperAtbash extends Chiper {
     }
 }
 
-module.exports = { ChiperCeaser, ChiperROT8, ChiperAtbash };
+module.exports = { ChiperCeaser, ChiperROT8, ChiperAtbash, Chiper };
