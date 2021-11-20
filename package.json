@@ -1,0 +1,24 @@
+{
+  "name": "task-1",
+  "version": "1.0.0",
+  "description": "Node js chiper",
+  "main": "my_ciphering_cli.js",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmitriEr/Task-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DmitriEr/Task-1/issues"
+  },
+  "homepage": "https://github.com/DmitriEr/Task-1#readme",
+  "devDependencies": {
+    "jest": "^27.3.1"
+  }
+}
