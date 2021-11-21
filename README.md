@@ -1,3 +1,9 @@
+# Task-2
+- из мастера перейти в ветку `task_2` (git checkout task_2)
+- установить зависимости `npm i`
+- запустить тесты командой `npm test`
+- запустить coverage `npm run test:coverage`
+
 # Task-1
 Для запуска программы набрать
 1. node my_ciphering_cli
