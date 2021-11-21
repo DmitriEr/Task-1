@@ -14,7 +14,12 @@ getConfig(value, input, output, chiper);
 
 const ConfigError = new CustomError(chiper, output, input, __dirname);
 
-ConfigError.checkValues();
+const text = ConfigError.checkValues();
+
+if (text) {
+    stderr.write(text);
+    exit(1);
+}
 
 const getArrayChipers = () => {
     return chiper.value.split('-').reduce((acc, prev) => {
